@@ -1,0 +1,70 @@
+PROSUM
+PROATM ATM Adapters on FreeBSD
+
+
+1. Introduction
+===============
+
+The PROATM adapters are based on the IDT77252 SAR and are not supported by the
+idt driver Richard Hodges for IDT77211 SAR.
+
+Prosum provides the proatm driver that is derived from the Richard Hodges driver
+and the Prosum nicstar2 driver for the IDT77252 SAR. Proatm can be used with
+kernel versions 3.5, 3.51, 4.1 and newer. It supports the ATM 25.6 Mbps and 155
+Mbps Prosum card models and the UBR, CBR and VBR QoS. It is compatible with the
+Host ATM Research Platform (HARP) software.
+
+We recommend you to download the latest version of this driver from our web
+site. You can contact us at the address indicated in section 5 regarding any
+problem of for knowing the state of the pending version.
+
+
+2. Installing proatm
+====================
+
+NOTE: If you are not familiar with building and installing a new kernel, please
+refer to the FreeBSD Handbook.
+
+Proatm is delivered in the form of a patch but you need not use the patch
+utility to install it. Follow the procedure below.
+
+* Copy proatm.c, proatm.h and proatm_rtbl.c into /usr/src/sys/pci.
+* Copy atm_if.h into /usr/src/sys/netatm.
+
+* in /usr/src/sys/i386/conf/YOUR_NAME add these entries:
+
+        options     ATM_CORE	#core ATM protocol family
+        options     ATM_IP      #IP over ATM support
+
+* at least one (and usually one) of the following:
+
+        options     ATM_SIGPVC  #SIGPVC signalling manager
+        options     ATM_SPANS   #SPANS signalling manager
+        options     ATM_UNI     #UNI signalling manager
+
+* and the device driver:
+
+        device      proatm0     #PROATM device driver (this file)
+
+* on 3.5 and 3.51 kernel versions,add the following line to
+/usr/src/sys/conf/files:
+
+        pci/proatm.c    optional proatm device-driver
+
+* on 4.1 and newer kernel versions,add the following line to
+/usr/src/sys/conf/files:
+
+        pci/proatm.c    optional proatm pci
+
+* Then rebuild and install your kernel and reboot.
+
+To rebuild and install your kernel, do the following in /usr/src/sys/i386/conf:
+
+# config YOUR_NAME
+
+# cd ../../compile/YOUR_NAME
+# make depend
+# make
+# make install
+# reboot
+(old kernel is /kernel.old if you need it!)
